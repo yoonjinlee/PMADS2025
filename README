@@ -1,0 +1,114 @@
+# MAD System — Multi-Agent Debate for Corporate Credit Analysis
+
+A Karl Popper Debate-based system that evaluates a company's **non-financial credit repayment ability** using CrewAI agents and web search (SerpAPI).
+
+---
+
+## Overview
+
+This system runs a structured 10-step Karl Popper Debate between pro and con AI agents, each grounded in the company's non-financial data (DART disclosures, patents, certifications, governance, news, etc.). The final output is a structured report in **JSON**, **Markdown**, and **PDF** formats.
+
+**Debate flow:**
+> A1 Opening → B3 Cross-Exam → B1 Opening → A3 Cross-Exam → A2 Rebuttal → B1 Cross-Exam → B2 Rebuttal → A1 Cross-Exam → A3 Pro Summary → B3 Con Summary
+
+---
+
+## Prerequisites
+
+### 1. Python packages
+
+```bash
+pip install crewai crewai-tools langchain-openai python-dotenv
+```
+
+### 2. `.env` file
+
+Create a `.env` file in the **same folder as the script** and add the following:
+
+```
+OPENAI_API_KEY=sk-...
+SERPAPI_API_KEY=...
+```
+
+> - OpenAI API key: [platform.openai.com](https://platform.openai.com)
+> - SerpAPI key: [serpapi.com](https://serpapi.com)
+
+### 3. Pandoc
+
+**macOS**
+```bash
+brew install pandoc
+```
+
+**Windows**
+- Download the `.msi` installer from [github.com/jgm/pandoc/releases](https://github.com/jgm/pandoc/releases)
+
+### 4. XeLaTeX (required for PDF generation)
+
+**macOS**
+```bash
+brew install --cask mactex-no-gui
+```
+> Note: This download is approximately 4 GB and may take several minutes.
+
+**Windows**
+- Install TeX Live from [tug.org/texlive](https://tug.org/texlive/)
+
+---
+
+## Setup
+
+### 1. Prepare company data
+
+The input is a JSON file containing the company's non-financial information (DART analysis, patents, certifications, news, governance, etc.).
+
+### 2. Set the file path
+
+Open `MAD system.py` and update **line 48** with the path to your company JSON file:
+
+```python
+# Before
+with open("/Users/mhkim/Desktop/.../company_data.json", "r", encoding="utf-8") as f:
+
+# After
+with open("/your/path/to/company_data.json", "r", encoding="utf-8") as f:
+```
+
+---
+
+## Usage
+
+```bash
+python "MAD system.py"
+```
+
+---
+
+## Output
+
+All output files are saved in the **same directory as the script**:
+
+| File | Description |
+|------|-------------|
+| `{company_name}.json` | Structured debate report (JSON) |
+| `{company_name}_type2.md` | Formatted Markdown report |
+| `{company_name}_type2.pdf` | Final PDF report |
+
+---
+
+## Tech Stack
+
+| Component | Details |
+|-----------|---------|
+| Agent framework | [CrewAI](https://github.com/crewAIInc/crewAI) |
+| LLM | GPT-4o via `langchain-openai` |
+| Web search | SerpAPI (`crewai-tools`) |
+| PDF generation | Pandoc + XeLaTeX |
+
+---
+
+## Notes
+
+- If SerpAPI is unavailable, the debate proceeds using JSON data only (web search is skipped gracefully).
+- PDF generation requires both `pandoc` and `xelatex` to be installed and accessible from the command line.
+- All agent outputs and the final report are written in **English**.
